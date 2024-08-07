@@ -149,6 +149,12 @@ function getLearnerData(course, ag, submissions) {
           `Assignment (id: ${element.id}) has an invalid due date (due_at: ${element.due_at})`
         );
       }
+      // if Assignment has invalid points_possible, throw an error
+      if (!Number(element.points_possible) || element.points_possible <= 0) {
+        throw new Error(
+          `Assignment (id: ${element.id}) has an invalid points_possible: ${element.points_possible}`
+        );
+      }
       return {
         ...obj,
         [element.id]: {
