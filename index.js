@@ -137,6 +137,8 @@ function getLearnerData(course, ag, submissions) {
   // return array of objects anyway even if it's empty because of errors
   return result;
 
+  /** NESTED HELPER FUNCTIONS **/
+
   // Nested function to return an object where each 'key' is an unique assignment ID
   // and 'value' is parameters of the assigment
   function getAssignments(ag, course) {
