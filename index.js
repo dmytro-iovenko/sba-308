@@ -58,7 +58,7 @@ const LearnerSubmissions = [
     learner_id: 125,
     assignment_id: 3,
     submission: {
-      submitted_at: "2023-01-25",
+      //   submitted_at: "2023-01-25",
       score: 400,
     },
   },
@@ -109,29 +109,33 @@ function getLearnerData(course, ag, submissions) {
   // here, we would process this data to achieve the desired result.
   const result = [];
 
-  // convert AssignmentGroup object to Assignments dictionary
-  let assignmentsObj = getAssignments(ag, course);
-  console.log("Assignments Dictionary:", assignmentsObj);
-
-  // convert LearnerSubmission objects array to Submissions dictionary
-  let submissionsObj = getSubmissions(submissions, assignmentsObj);
-  console.log("Submissions Dictionary:", submissionsObj);
-
-  // loop through submissions and push data to result array
-  for (let data in submissionsObj) {
-    result.push({
-      // the ID of the learner for which this data has been collected
-      id: Number(data),
-      // calculate the learner's total, weighted average
-      avg:
-        submissionsObj[data].totalScores /
-        submissionsObj[data].totalPossiblePoints,
-      // spread assignments object to list all learner's assignments
-      ...submissionsObj[data].assignments,
-    });
+  try {
+    // convert AssignmentGroup object to Assignments dictionary
+    let assignmentsObj = getAssignments(ag, course);
+    console.log("Assignments Dictionary:", assignmentsObj);
+    // convert LearnerSubmission objects array to Submissions dictionary
+    let submissionsObj = getSubmissions(submissions, assignmentsObj);
+    console.log("Submissions Dictionary:", submissionsObj);
+    // loop through submissions and push data to result array
+    for (let data in submissionsObj) {
+      result.push({
+        // the ID of the learner for which this data has been collected
+        id: Number(data),
+        // calculate the learner's total, weighted average
+        avg:
+          submissionsObj[data].totalScores /
+          submissionsObj[data].totalPossiblePoints,
+        // spread assignments object to list all learner's assignments
+        ...submissionsObj[data].assignments,
+      });
+    }
+  } catch (error) {
+    // handle error, if any
+    console.log(error);
   }
 
-  return result;
+  // return array of objects anyway even if it's empty because of errors
+  return result; 
 
   // Nested function to return an object where each 'key' is an unique assignment ID
   // and 'value' is parameters of the assigment
