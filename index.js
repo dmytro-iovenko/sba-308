@@ -136,21 +136,16 @@ function getLearnerData(course, ag, submissions) {
   // Nested function to return an object where each 'key' is an unique assignment ID
   // and 'value' is parameters of the assigment
   function getAssignmentsObj(assignments) {
-    return (
-      assignments
-        //if an assignment is not yet due, it should not be included
-        .filter((element) => Date.now() > Date.parse(element.due_at))
-        .reduce(
-          (obj, element) => ({
-            ...obj,
-            [element.id]: {
-              name: element.name,
-              due_at: element.due_at,
-              points_possible: element.points_possible,
-            },
-          }),
-          {}
-        )
+    return assignments.reduce(
+      (obj, element) => ({
+        ...obj,
+        [element.id]: {
+          name: element.name,
+          due_at: element.due_at,
+          points_possible: element.points_possible,
+        },
+      }),
+      {}
     );
   }
 
@@ -160,9 +155,14 @@ function getLearnerData(course, ag, submissions) {
   function getSubmissionsObj(submissions, assignmentsObj) {
     return (
       submissions
-        //if submission containt assignment ID that absent in assignments (is not yet due), 
-        //it should not be included to submissions dictionary as well
-        .filter((element) => assignmentsObj[element.assignment_id])
+        // if an assignment is not yet due, it should not be included in either
+        // the average or the keyed dictionary of scores
+        .filter(
+          (element) =>
+            Date.now() >
+            Date.parse(assignmentsObj[element.assignment_id].due_at)
+        )
+        // build submissions dictionary
         .reduce(
           (obj, element) => ({
             ...obj,
