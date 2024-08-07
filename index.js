@@ -136,13 +136,31 @@ function getLearnerData(course, ag, submissions) {
   // Nested function to return an object where each 'key' is an unique assignment ID
   // and 'value' is parameters of the assigment
   function getAssignments(ag, course) {
-    // if an AssignmentGroup does not belong to its course, throw an error
-    if (ag.course_id !== course.id) {
-      throw new Error(
-        `AssignmentGroup does not belong to its course (mismatching course_id: ${ag.course_id})`
-      );
+    // validate AssignmentGroup parameters
+    validateAssignmentGroup(ag, course);
+    // validate Assignment parameters
+    ag.assignments.forEach((element) => validateAssignment(element));
+    return ag.assignments.reduce(
+      (obj, element) => ({
+        ...obj,
+        [element.id]: {
+          name: element.name,
+          due_at: element.due_at,
+          points_possible: element.points_possible,
+        },
+      }),
+      {}
+    );
+    /** NESTED VALIDATIONS **/
+    function validateAssignmentGroup(ag, course) {
+      // if an AssignmentGroup does not belong to its course, throw an error
+      if (ag.course_id !== course.id) {
+        throw new Error(
+          `AssignmentGroup does not belong to its course (mismatching course_id: ${ag.course_id})`
+        );
+      }
     }
-    return ag.assignments.reduce((obj, element) => {
+    function validateAssignment(element) {
       // if Assignment has invalid due date, throw an error
       if (!Date.parse(element.due_at)) {
         throw new Error(
@@ -155,21 +173,17 @@ function getLearnerData(course, ag, submissions) {
           `Assignment (id: ${element.id}) has an invalid points_possible: ${element.points_possible}`
         );
       }
-      return {
-        ...obj,
-        [element.id]: {
-          name: element.name,
-          due_at: element.due_at,
-          points_possible: element.points_possible,
-        },
-      };
-    }, {});
+    }
   }
 
   // Nested function to return an object where each 'key' is an unique learner ID
   // and 'value' is another object with all learner's assigments
   // and parameters that need to calculate the learner’s total, weighted average
   function getSubmissions(submissions, assignments) {
+    // validate Submission parameters
+    submissions.forEach((element) => {
+      validateSubmission(element, assignments);
+    });
     return (
       submissions
         // if an assignment is not yet due, it should not be included in either
@@ -180,24 +194,6 @@ function getLearnerData(course, ag, submissions) {
         )
         // build submissions dictionary
         .reduce((obj, element) => {
-          // if Submission has invalid assignment_id, throw an error
-          if (!assignments[element.assignment_id]) {
-            throw new Error(
-              `Submission has invalid assignment_id: ${element.assignment_id}, learner_id: ${element.learner_id}`
-            );
-          }
-          // if Submission has invalid submission.score, throw an error
-          if (!(Number(element.submission.score) >= 0)) {
-            throw new Error(
-              `Submission has invalid submission.score: ${element.submission.score}, learner_id: ${element.learner_id}`
-            );
-          }
-          // if Submission has invalid submission.submitted_at, throw an error
-          if (!Date.parse(element.submission.submitted_at)) {
-            throw new Error(
-              `Submission has invalid submission.submitted_at: ${element.submission.submitted_at}, learner_id: ${element.learner_id}`
-            );
-          }
           return {
             ...obj,
             [element.learner_id]: {
@@ -236,6 +232,33 @@ function getLearnerData(course, ag, submissions) {
           };
         }, {})
     );
+    /** NESTED VALIDATIONS **/
+    function validateSubmission(element, assignments) {
+      // if Submission has invalid learner_id, throw an error
+      if (!element.learner_id) {
+        throw new Error(
+          `Submission has invalid learner_id: ${element.learner_id}, assignment_id: ${element.assignment_id}`
+        );
+      }
+      // if Submission has invalid assignment_id, throw an error
+      if (!assignments[element.assignment_id]) {
+        throw new Error(
+          `Submission has invalid assignment_id: ${element.assignment_id}, learner_id: ${element.learner_id}`
+        );
+      }
+      // if Submission has invalid submission.score, throw an error
+      if (!(Number(element.submission.score) >= 0)) {
+        throw new Error(
+          `Submission has invalid submission.score: ${element.submission.score}, learner_id: ${element.learner_id}, assignment_id: ${element.assignment_id}`
+        );
+      }
+      // if Submission has invalid submission.submitted_at, throw an error
+      if (!Date.parse(element.submission.submitted_at)) {
+        throw new Error(
+          `Submission has invalid submission.submitted_at: ${element.submission.submitted_at}, learner_id: ${element.learner_id}, assignment_id: ${element.assignment_id}`
+        );
+      }
+    }
   }
   //   const result = [
   //     {
