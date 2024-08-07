@@ -122,9 +122,11 @@ function getLearnerData(course, ag, submissions) {
         // the ID of the learner for which this data has been collected
         id: Number(data),
         // calculate the learner's total, weighted average
-        avg:
+        // and round result to 3 decimal places
+        avg: roundToThreeDecimalPlaces(
           submissionsObj[data].totalScores /
-          submissionsObj[data].totalPossiblePoints,
+            submissionsObj[data].totalPossiblePoints
+        ),
         // spread assignments object to list all learner's assignments
         ...submissionsObj[data].assignments,
       });
@@ -219,15 +221,15 @@ function getLearnerData(course, ag, submissions) {
                 ? // if assignments key already exists, then add a new record to the existing object
                   {
                     ...obj[element.learner_id].assignments,
-                    [element.assignment_id]:
-                      adjusted_score /
-                      assignments[element.assignment_id].points_possible,
+                    [element.assignment_id]: roundToThreeDecimalPlaces(
+                      adjusted_score / assignments[element.assignment_id].points_possible
+                    ),
                   }
                 : // otherwise, create a new object and store it
                   {
-                    [element.assignment_id]:
-                      adjusted_score /
-                      assignments[element.assignment_id].points_possible,
+                    [element.assignment_id]: roundToThreeDecimalPlaces(
+                      adjusted_score / assignments[element.assignment_id].points_possible
+                    ),
                   },
               // calculate total scores of learner's assignments to use in avg calculation later
               totalScores: obj[element.learner_id]
@@ -274,6 +276,11 @@ function getLearnerData(course, ag, submissions) {
       }
     }
   }
+  // Nested function to round number to 3 decimal places
+  function roundToThreeDecimalPlaces(num) {
+    return Number(num.toFixed(3));
+  }
+
   //   const result = [
   //     {
   //       id: 125,
