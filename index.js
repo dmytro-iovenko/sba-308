@@ -110,7 +110,7 @@ function getLearnerData(course, ag, submissions) {
   const result = [];
 
   // convert AssignmentGroup object to Assignments dictionary
-  let assignmentsObj = getAssignments(ag.assignments);
+  let assignmentsObj = getAssignments(ag, course);
   console.log("Assignments Dictionary:", assignmentsObj);
 
   // convert LearnerSubmission objects array to Submissions dictionary
@@ -135,8 +135,14 @@ function getLearnerData(course, ag, submissions) {
 
   // Nested function to return an object where each 'key' is an unique assignment ID
   // and 'value' is parameters of the assigment
-  function getAssignments(assignments) {
-    return assignments.reduce(
+  function getAssignments(ag, course) {
+    // if an AssignmentGroup does not belong to its course, throw an error
+    if (ag.course_id !== course.id) {
+      throw new Error(
+        "AssignmentGroup does not belong to its course (mismatching course_id)"
+      );
+    }
+    return ag.assignments.reduce(
       (obj, element) => ({
         ...obj,
         [element.id]: {
