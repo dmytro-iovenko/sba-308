@@ -125,9 +125,20 @@ function getLearnerData(course, ag, submissions) {
         // each assignment should have a key with its ID,
         // and the value is the percentage that the learner scored
         // on the assignment (submission.score / points_possible)
-        [element.assignment_id]:
-          element.submission.score /
-          assignmentsObj[element.assignment_id].points_possible,
+        assignments: obj[element.learner_id]
+          ? // if assignments key already exists, then add a new record to the existing object
+            {
+              ...obj[element.learner_id].assignments,
+              [element.assignment_id]:
+                element.submission.score /
+                assignmentsObj[element.assignment_id].points_possible,
+            }
+          : // otherwise create a new object and store it
+            {
+              [element.assignment_id]:
+                element.submission.score /
+                assignmentsObj[element.assignment_id].points_possible,
+            },
       },
     }),
     {}
