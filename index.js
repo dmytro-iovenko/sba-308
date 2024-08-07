@@ -112,10 +112,8 @@ function getLearnerData(course, ag, submissions) {
   try {
     // convert AssignmentGroup object to Assignments dictionary
     let assignmentsObj = getAssignments(ag, course);
-    console.log("Assignments Dictionary:", assignmentsObj);
     // convert LearnerSubmission objects array to Submissions dictionary
     let submissionsObj = getSubmissions(submissions, assignmentsObj);
-    console.log("Submissions Dictionary:", submissionsObj);
     // loop through submissions and push data to result array
     for (let data in submissionsObj) {
       result.push({
@@ -209,7 +207,6 @@ function getLearnerData(course, ag, submissions) {
                 // deduct 10 percent of the total points possible
                 0.1 * assignments[element.assignment_id].points_possible
               : element.submission.score;
-          console.log(element.submission.score, adjusted_score);
           return {
             ...obj,
             [element.learner_id]: {
@@ -280,21 +277,6 @@ function getLearnerData(course, ag, submissions) {
   function roundToThreeDecimalPlaces(num) {
     return Number(num.toFixed(3));
   }
-
-  //   const result = [
-  //     {
-  //       id: 125,
-  //       avg: 0.985, // (47 + 150) / (50 + 150)
-  //       1: 0.94, // 47 / 50
-  //       2: 1.0, // 150 / 150
-  //     },
-  //     {
-  //       id: 132,
-  //       avg: 0.82, // (39 + 125) / (50 + 150)
-  //       1: 0.78, // 39 / 50
-  //       2: 0.833, // late: (140 - 15) / 150
-  //     },
-  //   ];
 }
 
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
