@@ -142,17 +142,22 @@ function getLearnerData(course, ag, submissions) {
         `AssignmentGroup does not belong to its course (mismatching course_id: ${ag.course_id})`
       );
     }
-    return ag.assignments.reduce(
-      (obj, element) => ({
+    return ag.assignments.reduce((obj, element) => {
+      // if Assignment has invalid due date, throw an error
+      if (!Date.parse(element.due_at)) {
+        throw new Error(
+          `Assignment (id: ${element.id}) has an invalid due date (due_at: ${element.due_at})`
+        );
+      }
+      return {
         ...obj,
         [element.id]: {
           name: element.name,
           due_at: element.due_at,
           points_possible: element.points_possible,
         },
-      }),
-      {}
-    );
+      };
+    }, {});
   }
 
   // Nested function to return an object where each 'key' is an unique learner ID
