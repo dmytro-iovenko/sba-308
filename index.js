@@ -150,7 +150,7 @@ function getLearnerData(course, ag, submissions) {
         );
       }
       // if Assignment has invalid points_possible, throw an error
-      if (!Number(element.points_possible) || element.points_possible <= 0) {
+      if (!(Number(element.points_possible) > 0)) {
         throw new Error(
           `Assignment (id: ${element.id}) has an invalid points_possible: ${element.points_possible}`
         );
@@ -186,10 +186,16 @@ function getLearnerData(course, ag, submissions) {
               `Submission has invalid assignment_id: ${element.assignment_id}, learner_id: ${element.learner_id}`
             );
           }
-          // if Assignment has invalid points_possible, throw an error
+          // if Submission has invalid submission.score, throw an error
           if (!(Number(element.submission.score) >= 0)) {
             throw new Error(
               `Submission has invalid submission.score: ${element.submission.score}, learner_id: ${element.learner_id}`
+            );
+          }
+          // if Submission has invalid submission.submitted_at, throw an error
+          if (!Date.parse(element.submission.submitted_at)) {
+            throw new Error(
+              `Submission has invalid submission.submitted_at: ${element.submission.submitted_at}, learner_id: ${element.learner_id}`
             );
           }
           return {
