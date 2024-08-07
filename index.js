@@ -109,13 +109,13 @@ function getLearnerData(course, ag, submissions) {
   // here, we would process this data to achieve the desired result.
   const result = [];
 
-  // convert AssignmentGroup object to Assignments object
-  let assignmentsObj = getAssignmentsObj(ag.assignments);
-  console.log("assignmentsObj:", assignmentsObj);
+  // convert AssignmentGroup object to Assignments dictionary
+  let assignmentsObj = getAssignments(ag.assignments);
+  console.log("Assignments Dictionary:", assignmentsObj);
 
-  // convert LearnerSubmission objects array to Submissions object
-  let submissionsObj = getSubmissionsObj(submissions, assignmentsObj);
-  console.log("submissionsObj:", submissionsObj);
+  // convert LearnerSubmission objects array to Submissions dictionary
+  let submissionsObj = getSubmissions(submissions, assignmentsObj);
+  console.log("Submissions Dictionary:", submissionsObj);
 
   // loop through submissions and push data to result array
   for (let data in submissionsObj) {
@@ -135,7 +135,7 @@ function getLearnerData(course, ag, submissions) {
 
   // Nested function to return an object where each 'key' is an unique assignment ID
   // and 'value' is parameters of the assigment
-  function getAssignmentsObj(assignments) {
+  function getAssignments(assignments) {
     return assignments.reduce(
       (obj, element) => ({
         ...obj,
@@ -152,15 +152,14 @@ function getLearnerData(course, ag, submissions) {
   // Nested function to return an object where each 'key' is an unique learner ID
   // and 'value' is another object with all learner's assigments
   // and parameters that need to calculate the learner’s total, weighted average
-  function getSubmissionsObj(submissions, assignmentsObj) {
+  function getSubmissions(submissions, assignments) {
     return (
       submissions
         // if an assignment is not yet due, it should not be included in either
         // the average or the keyed dictionary of scores
         .filter(
           (element) =>
-            Date.now() >
-            Date.parse(assignmentsObj[element.assignment_id].due_at)
+            Date.now() > Date.parse(assignments[element.assignment_id].due_at)
         )
         // build submissions dictionary
         .reduce(
@@ -177,13 +176,13 @@ function getLearnerData(course, ag, submissions) {
                     ...obj[element.learner_id].assignments,
                     [element.assignment_id]:
                       element.submission.score /
-                      assignmentsObj[element.assignment_id].points_possible,
+                      assignments[element.assignment_id].points_possible,
                   }
                 : // otherwise, create a new object and store it
                   {
                     [element.assignment_id]:
                       element.submission.score /
-                      assignmentsObj[element.assignment_id].points_possible,
+                      assignments[element.assignment_id].points_possible,
                   },
               // calculate total scores of learner's assignments to use in avg calculation later
               totalScores: obj[element.learner_id]
@@ -195,9 +194,9 @@ function getLearnerData(course, ag, submissions) {
               totalPossiblePoints: obj[element.learner_id]
                 ? // if totalScores key already exists, then increase it by points_possible
                   obj[element.learner_id].totalPossiblePoints +
-                  assignmentsObj[element.assignment_id].points_possible
+                  assignments[element.assignment_id].points_possible
                 : // otherwise, store points_possible as new totalPossiblePoints value
-                  assignmentsObj[element.assignment_id].points_possible,
+                  assignments[element.assignment_id].points_possible,
             },
           }),
           {}
