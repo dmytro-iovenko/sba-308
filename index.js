@@ -186,6 +186,12 @@ function getLearnerData(course, ag, submissions) {
               `Submission has invalid assignment_id: ${element.assignment_id}, learner_id: ${element.learner_id}`
             );
           }
+          // if Assignment has invalid points_possible, throw an error
+          if (!(Number(element.submission.score) >= 0)) {
+            throw new Error(
+              `Submission has invalid submission.score: ${element.submission.score}, learner_id: ${element.learner_id}`
+            );
+          }
           return {
             ...obj,
             [element.learner_id]: {
