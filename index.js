@@ -168,8 +168,14 @@ function getLearnerData(course, ag, submissions) {
             Date.now() > Date.parse(assignments[element.assignment_id].due_at)
         )
         // build submissions dictionary
-        .reduce(
-          (obj, element) => ({
+        .reduce((obj, element) => {
+          // if Submission has invalid assignment_id, throw an error
+          if (!assignments[element.assignment_id]) {
+            throw new Error(
+              `Submission has invalid assignment_id: ${element.assignment_id}, learner_id: ${element.learner_id}`
+            );
+          }
+          return {
             ...obj,
             [element.learner_id]: {
               ...obj[element.learner_id],
@@ -204,9 +210,8 @@ function getLearnerData(course, ag, submissions) {
                 : // otherwise, store points_possible as new totalPossiblePoints value
                   assignments[element.assignment_id].points_possible,
             },
-          }),
-          {}
-        )
+          };
+        }, {})
     );
   }
   //   const result = [
