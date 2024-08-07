@@ -133,12 +133,18 @@ function getLearnerData(course, ag, submissions) {
                 element.submission.score /
                 assignmentsObj[element.assignment_id].points_possible,
             }
-          : // otherwise create a new object and store it
+          : // otherwise, create a new object and store it
             {
               [element.assignment_id]:
                 element.submission.score /
                 assignmentsObj[element.assignment_id].points_possible,
             },
+        // calculate total scores of all learner's assignments to use in avg calculation later
+        totalScores: obj[element.learner_id]
+          ? // if totalScores key already exists, then increase it by submission.score
+            obj[element.learner_id].totalScores + element.submission.score
+          : // otherwise, store submission.score as new totalScores value
+            element.submission.score,
       },
     }),
     {}
