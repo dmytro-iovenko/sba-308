@@ -116,33 +116,38 @@ function getLearnerData(course, ag, submissions) {
   // convert LearnerSubmission objects array to Submissions object
   // where each 'key' is an unique learner ID and 'value' is an object with all assignments
   // for this learner ID
-  let submissionsObj = {};
-  submissions.forEach((element) => {
-    submissionsObj[element.learner_id] = {
-      ...submissionsObj[element.learner_id],
-      // each assignment should have a key with its ID,
-      // and the value is the percentage that the learner scored 
-      // on the assignment (submission.score / points_possible)
-      [element.assignment_id]: element.submission.score / assignmentsObj[element.assignment_id].points_possible,
-    };
-  });
+  //   let submissionsObj = {};
+  let submissionsObj = submissions.reduce(
+    (obj, element) => ({
+      ...obj,
+      [element.learner_id]: {
+        ...obj[element.learner_id],
+        // each assignment should have a key with its ID,
+        // and the value is the percentage that the learner scored
+        // on the assignment (submission.score / points_possible)
+        [element.assignment_id]:
+          element.submission.score /
+          assignmentsObj[element.assignment_id].points_possible,
+      },
+    }),
+    {}
+  );
   console.log("submissionsObj:", submissionsObj);
 
   // Function to return an object where each 'key' is an unique assignment ID
   // and 'value' is parameters of the assigment
   function getAssignments(arr) {
-    let obj = {};
-    arr.forEach((element) => {
-      obj = {
+    return arr.reduce(
+      (obj, element) => ({
         ...obj,
         [element.id]: {
           name: element.name,
           due_at: element.due_at,
           points_possible: element.points_possible,
         },
-      };
-    });
-    return obj;
+      }),
+      {}
+    );
   }
 
   //   const result = [
