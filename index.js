@@ -139,7 +139,7 @@ function getLearnerData(course, ag, submissions) {
     // if an AssignmentGroup does not belong to its course, throw an error
     if (ag.course_id !== course.id) {
       throw new Error(
-        "AssignmentGroup does not belong to its course (mismatching course_id)"
+        `AssignmentGroup does not belong to its course (mismatching course_id: ${ag.course_id})`
       );
     }
     return ag.assignments.reduce(
