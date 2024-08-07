@@ -133,7 +133,7 @@ function getLearnerData(course, ag, submissions) {
 
   return result;
 
-  // Function to return an object where each 'key' is an unique assignment ID
+  // Nested function to return an object where each 'key' is an unique assignment ID
   // and 'value' is parameters of the assigment
   function getAssignmentsObj(assignments) {
     return assignments.reduce(
@@ -149,7 +149,7 @@ function getLearnerData(course, ag, submissions) {
     );
   }
 
-  // Function to return an object where each 'key' is an unique learner ID
+  // Nested function to return an object where each 'key' is an unique learner ID
   // and 'value' is another object with all learner's assigments
   // and parameters that need to calculate the learner’s total, weighted average
   function getSubmissionsObj(submissions, assignmentsObj) {
