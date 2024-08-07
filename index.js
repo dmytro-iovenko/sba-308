@@ -109,21 +109,26 @@ function getLearnerData(course, ag, submissions) {
   // here, we would process this data to achieve the desired result.
   const result = [];
 
-  // convert AssignmentGroup object to Assignments object 
-  // where each 'key' is an unique assignment id and 'value' is parameters of the assigment
-  let assignmentsObj = {};
-  ag.assignments.forEach((element) => {
-    assignmentsObj = {
-      ...assignmentsObj,
-      [element.id]: {
-        name: element.name,
-        due_at: element.due_at,
-        points_possible: element.points_possible,
-      },
-    };
-  });
-
+  // convert AssignmentGroup object to Assignments object
+  let assignmentsObj = getAssignments(ag.assignments);
   console.log("assignmentsObj", assignmentsObj);
+
+  // Function to return an object where each 'key' is an unique assignment id 
+  // and 'value' is parameters of the assigment
+  function getAssignments(arr) {
+    let obj = {};
+    arr.forEach((element) => {
+      obj = {
+        ...obj,
+        [element.id]: {
+          name: element.name,
+          due_at: element.due_at,
+          points_possible: element.points_possible,
+        },
+      };
+    });
+    return obj;
+  }
 
   //   const result = [
   //     {
