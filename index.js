@@ -117,6 +117,22 @@ function getLearnerData(course, ag, submissions) {
   let submissionsObj = getSubmissionsObj(submissions, assignmentsObj);
   console.log("submissionsObj:", submissionsObj);
 
+  // loop through submissions and push data to result array
+  for (let data in submissionsObj) {
+    result.push({
+      // the ID of the learner for which this data has been collected
+      id: Number(data),
+      // calculate the learner's total, weighted average
+      avg:
+        submissionsObj[data].totalScores /
+        submissionsObj[data].totalPossiblePoints,
+      // spread assignments object to list all learner's assignments
+      ...submissionsObj[data].assignments,
+    });
+  }
+
+  return result;
+
   // Function to return an object where each 'key' is an unique assignment ID
   // and 'value' is parameters of the assigment
   function getAssignmentsObj(assignments) {
@@ -131,10 +147,10 @@ function getLearnerData(course, ag, submissions) {
       }),
       {}
     );
-}
+  }
 
   // Function to return an object where each 'key' is an unique learner ID
-  // and 'value' is another object with all learner's assigments 
+  // and 'value' is another object with all learner's assigments
   // and parameters that need to calculate the learner’s total, weighted average
   function getSubmissionsObj(submissions, assignmentsObj) {
     return submissions.reduce(
@@ -191,8 +207,6 @@ function getLearnerData(course, ag, submissions) {
   //       2: 0.833, // late: (140 - 15) / 150
   //     },
   //   ];
-
-  return result;
 }
 
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
