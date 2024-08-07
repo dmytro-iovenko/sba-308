@@ -58,7 +58,7 @@ const LearnerSubmissions = [
     learner_id: 125,
     assignment_id: 3,
     submission: {
-      //   submitted_at: "2023-01-25",
+      submitted_at: "2023-01-25",
       score: 400,
     },
   },
@@ -135,7 +135,7 @@ function getLearnerData(course, ag, submissions) {
   }
 
   // return array of objects anyway even if it's empty because of errors
-  return result; 
+  return result;
 
   // Nested function to return an object where each 'key' is an unique assignment ID
   // and 'value' is parameters of the assigment
@@ -198,6 +198,16 @@ function getLearnerData(course, ag, submissions) {
         )
         // build submissions dictionary
         .reduce((obj, element) => {
+          // if the learner’s submission is late (submitted_at is past due_at),
+          // deduct 10 percent of the total points possible from the score for that assignment
+          let adjusted_score =
+            Date.parse(element.submission.submitted_at) >
+            Date.parse(assignments[element.assignment_id].due_at)
+              ? element.submission.score -
+                // deduct 10 percent of the total points possible
+                0.1 * assignments[element.assignment_id].points_possible
+              : element.submission.score;
+          console.log(element.submission.score, adjusted_score);
           return {
             ...obj,
             [element.learner_id]: {
@@ -210,21 +220,21 @@ function getLearnerData(course, ag, submissions) {
                   {
                     ...obj[element.learner_id].assignments,
                     [element.assignment_id]:
-                      element.submission.score /
+                      adjusted_score /
                       assignments[element.assignment_id].points_possible,
                   }
                 : // otherwise, create a new object and store it
                   {
                     [element.assignment_id]:
-                      element.submission.score /
+                      adjusted_score /
                       assignments[element.assignment_id].points_possible,
                   },
               // calculate total scores of learner's assignments to use in avg calculation later
               totalScores: obj[element.learner_id]
                 ? // if totalScores key already exists, then increase it by submission.score
-                  obj[element.learner_id].totalScores + element.submission.score
+                  obj[element.learner_id].totalScores + adjusted_score
                 : // otherwise, store submission.score as new totalScores value
-                  element.submission.score,
+                  adjusted_score,
               // calculate total possible points to use in avg calculation
               totalPossiblePoints: obj[element.learner_id]
                 ? // if totalScores key already exists, then increase it by points_possible
