@@ -190,16 +190,17 @@ function getLearnerData(course, ag, submissions) {
     submissions.forEach((element) => {
       validateSubmission(element, assignments);
     });
+    const filtered_submissions = [];
+    // if an assignment is not yet due, it should not be included in either
+    // the average or the keyed dictionary of scores
+    for (let element of submissions) {
+        if (Date.parse(assignments[element.assignment_id].due_at) >= Date.now()) {
+            continue;
+        } 
+        filtered_submissions.push(element);
+    }
     return (
-      submissions
-        // if an assignment is not yet due, it should not be included in either
-        // the average or the keyed dictionary of scores
-        .filter(
-          (element) =>
-            Date.now() > Date.parse(assignments[element.assignment_id].due_at)
-        )
-        // build submissions dictionary
-        .reduce((obj, element) => {
+        filtered_submissions.reduce((obj, element) => {
           // if the learner’s submission is late (submitted_at is past due_at),
           // deduct 10 percent of the total points possible from the score for that assignment
           let adjusted_score =
