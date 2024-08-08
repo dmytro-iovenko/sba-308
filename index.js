@@ -174,7 +174,7 @@ function getLearnerData(course, ag, submissions) {
         );
       }
       // if Assignment has invalid points_possible, throw an error
-      if (!(Number(element.points_possible) > 0)) {
+      else if (!(Number(element.points_possible) > 0)) {
         throw new Error(
           `Assignment (id: ${element.id}) has an invalid points_possible: ${element.points_possible}`
         );
@@ -221,13 +221,15 @@ function getLearnerData(course, ag, submissions) {
                   {
                     ...obj[element.learner_id].assignments,
                     [element.assignment_id]: roundToThreeDecimalPlaces(
-                      adjusted_score / assignments[element.assignment_id].points_possible
+                      adjusted_score /
+                        assignments[element.assignment_id].points_possible
                     ),
                   }
                 : // otherwise, create a new object and store it
                   {
                     [element.assignment_id]: roundToThreeDecimalPlaces(
-                      adjusted_score / assignments[element.assignment_id].points_possible
+                      adjusted_score /
+                        assignments[element.assignment_id].points_possible
                     ),
                   },
               // calculate total scores of learner's assignments to use in avg calculation later
@@ -256,19 +258,19 @@ function getLearnerData(course, ag, submissions) {
         );
       }
       // if Submission has invalid assignment_id, throw an error
-      if (!assignments[element.assignment_id]) {
+      else if (!assignments[element.assignment_id]) {
         throw new Error(
           `Submission has invalid assignment_id: ${element.assignment_id}, learner_id: ${element.learner_id}`
         );
       }
       // if Submission has invalid submission.score, throw an error
-      if (!(Number(element.submission.score) >= 0)) {
+      else if (!(Number(element.submission.score) >= 0)) {
         throw new Error(
           `Submission has invalid submission.score: ${element.submission.score}, learner_id: ${element.learner_id}, assignment_id: ${element.assignment_id}`
         );
       }
       // if Submission has invalid submission.submitted_at, throw an error
-      if (!Date.parse(element.submission.submitted_at)) {
+      else if (!Date.parse(element.submission.submitted_at)) {
         throw new Error(
           `Submission has invalid submission.submitted_at: ${element.submission.submitted_at}, learner_id: ${element.learner_id}, assignment_id: ${element.assignment_id}`
         );
